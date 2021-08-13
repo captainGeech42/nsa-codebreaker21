@@ -347,7 +347,15 @@ def analyze_session(packets):
 
         # d071a2d6-a44e-41fe-af49-8b7df6587bad
         # gipsy+1.5.7.2+1615896515 (ts delta = -1)
-        "172.23.56.185": binascii.unhexlify("88faa85f19baec8902ab4b7faff2ff84e35ebcef2901994f5b3b275dc7780dd0")
+        "172.23.56.185": binascii.unhexlify("88faa85f19baec8902ab4b7faff2ff84e35ebcef2901994f5b3b275dc7780dd0"),
+
+        # d1a5f6df-ab4a-42e8-ae9c-435d3ef68ff9
+        # ange+0.0.2.4+1615896617 (ts delta = )
+        "192.168.147.12": binascii.unhexlify("99034f685191c99f04d1b95829de6c3c80b461c601ef12b22166091c3148ba7f"),
+
+        # 8b21b2a7-5b65-43c8-870b-7471fd21bcec
+        # kishore+2.3.7.8+1615896571 (ts delta = )
+        "198.18.108.159": binascii.unhexlify("80420daedd7524372b0329b18d98fa46a4f4742c0ea80d5bd9cbf0c84cedabe3")
     }
 
     if victim_ip in cached_session_keys.keys():
