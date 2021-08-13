@@ -1,0 +1,127 @@
+seal == encrypt
+open == decrypt
+
+a box is some thing that is instantiatied with key, and is then sealed with a message
+
+https://github.com/codahale/xsalsa20poly1305
+
+not sure what a secretbox is, some references to it in the code, and also here:
+https://github.com/openalias/dnscrypt-python/blob/master/slownacl/xsalsa20poly1305.py
+
+https://libsodium.gitbook.io/doc/secret-key_cryptography/secretbox
+
+https://github.com/jedisct1/libsodium/blob/master/src/libsodium/crypto_secretbox/xsalsa20poly1305/secretbox_xsalsa20poly1305.c
+
+session key:
+
+    SHA256(username.lower() "+" version "+" timestamp.unixepoch())
+
+    example:
+
+    SHA256("user+1.0.4.3+1628032765")
+
+fingerprint string:
+
+    b64("username=$username") + "," + b64("version=$version") + "," + b64("os=$os") + "," + b64("timestamp=$timestamp")
+
+    $username = getlogin() || "unknown"
+    $version = "1.0.4.3-OYP"
+    $os = uname() ("Linux", utsname.sysname)
+    $timestamp = unix epoch (e.g., "1628032765")
+
+    example:
+
+    dXNlcm5hbWU9ZGVidWc=,dmVyc2lvbj0xLjAuNC4zLU9ZUA==,b3M9TGludXg=,dGltZXN0YW1wPTE2MjgwMzI3NjU=
+
+first packet sent to the server is the encrypted fingerprint data
+
+encrypt_and_send_to_socket crypto:
+
+    crypto_box_curve25519xsalsa20poly1305_ref_keypair()
+        generates client public key?
+
+    generates an 0x18 long nonce of random bytes
+
+    crypto_box_curve25519xsalsa20poly1305_ref()
+        encrypts?
+
+https://github.com/Crest/quicktun/blob/master/include/crypto_box_curve25519xsalsa20poly1305.h
+
+extern int crypto_box_curve25519xsalsa20poly1305_ref(unsigned char *,const unsigned char *,unsigned long long,const unsigned char *,const unsigned char *,const unsigned char *);
+
+int
+crypto_box_curve25519xsalsa20poly1305(unsigned char *c, const unsigned char *m,
+                                      unsigned long long   mlen,
+                                      const unsigned char *n,
+                                      const unsigned char *pk,
+                                      const unsigned char *sk)
+
+extern int crypto_box_curve25519xsalsa20poly1305_ref_keypair(unsigned char *,unsigned char *);
+
+https://github.com/jedisct1/libsodium/commit/393aa1a229c2b4cdb84477d5d671e81190d35e0a
+
+
+the actual first packet:
+
+    client_public + length_header + nonce + ciphertext
+    32              4?              24      n
+
+    ciphertext = encrypted fingerprint data
+
+when the client connects to the server in the pcap, three packets are sent before the server sends
+
+    === 172.23.56.185:36475 -> 10.18.42.32:6666 (32 bytes)
+    === 172.23.56.185:36475 -> 10.18.42.32:6666 (135 bytes)
+    === 172.23.56.185:36475 -> 10.18.42.32:6666 (78 bytes)
+
+length header:
+4 bytes
+lower two, random
+size1 = BE(lower two)
+size2 = length - size1 + 0x10000
+uvar2 = BE(size2)
+length header = lower 2 == random bytes, higher two == uvar2
+
+client sends
+
+    client pubkey
+
+    length header + nonce + ciphertext
+        ciphertext has encrypted fingeprint data (username, version, os, and timestamp)
+        this is enough to generate the session key
+
+(client generates packets and then encrypts them all using the session key)
+
+client sends init pkt
+
+server sends response code
+
+client sends upload pkt(s)
+server sends response code(s)
+
+client sends fin pkt
+server sends response code
+
+==========================
+
+can i cheese this?
+i know a version number, i can get timestamp from the pcap, and i can get username from earlier task in the registry stuff
+
+https://nacl.cr.yp.to/box.html
+
+bufs encrypted using the session key have +24 added to the length of the ciphertext (that is for the nonce, duh)
+
+almost certainly the solution is brute forcing the session key
+
+https://github.com/danielmiessler/SecLists/blob/master/Usernames/top-usernames-shortlist.txt
+https://github.com/pentestmonkey/yaptest/blob/master/ssh-usernames.txt
+
+things to try
+- just first name
+- just last name
+- common first names and last names
+- username@computername instead of domain
+
+UUIDs:
+1210bd56-86f4-44c8-816a-b8d5d9c40c78
+c8f5fb1b-87cb-4e14-9d01-8efef9c7502b
