@@ -350,18 +350,17 @@ def analyze_session(packets):
         "172.23.56.185": binascii.unhexlify("88faa85f19baec8902ab4b7faff2ff84e35ebcef2901994f5b3b275dc7780dd0"),
 
         # d1a5f6df-ab4a-42e8-ae9c-435d3ef68ff9
-        # ange+0.0.2.4+1615896617 (ts delta = )
+        # ange+0.0.2.4+1615896617 (ts delta = -1)
         "192.168.147.12": binascii.unhexlify("99034f685191c99f04d1b95829de6c3c80b461c601ef12b22166091c3148ba7f"),
 
         # 8b21b2a7-5b65-43c8-870b-7471fd21bcec
-        # kishore+2.3.7.8+1615896571 (ts delta = )
+        # kishore+2.3.7.8+1615896571 (ts delta = -1)
         "198.18.108.159": binascii.unhexlify("80420daedd7524372b0329b18d98fa46a4f4742c0ea80d5bd9cbf0c84cedabe3")
     }
 
     if victim_ip in cached_session_keys.keys():
         print("using cached session key")
         session_key = cached_session_keys[victim_ip]
-        return
     else:
         print("bruteforcing session key")
         session_key = brute_force_session_key(data_packets[2])
@@ -390,14 +389,14 @@ def main():
     pcap = rdpcap("../task1/capture.pcap")
     sessions = pcap.sessions(full_duplex)
 
-    with Pool(len(sessions.values())) as p:
-        p.map(analyze_session, sessions.values())
+    # with Pool(len(sessions.values())) as p:
+    #     p.map(analyze_session, sessions.values())
 
-    # for s in sessions.values():
-    #     if s[0][IP].src == "192.168.174.131":
-    #     #if s[0][TCP].sport == 6666 or s[0][TCP].dport == 6666:
-    #         analyze_session(s)
-    #         print("\n####################################################################################################\n")
+    for s in sessions.values():
+        # if s[0][IP].src == "192.168.174.131":
+        if s[0][TCP].sport == 6666 or s[0][TCP].dport == 6666:
+            analyze_session(s)
+            print("\n####################################################################################################\n")
 
 if __name__ == "__main__":
     main()
