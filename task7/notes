@@ -1,0 +1,42 @@
+example of git exfil payload:
+
+Commit: 255b89835b46fb5270e716b200794a89a8decca3
+Author: asdf
+Email: a@asdf.com
+Time: Tue Aug  3 01:56:03 2021
+
+
+yes
+From 255b89835b46fb5270e716b200794a89a8decca3 Mon Sep 17 00:00:00 2001
+From: asdf <a@asdf.com>
+Date: Tue, 3 Aug 2021 01:56:03 +0000
+Subject: [PATCH] yes
+
+---
+ asdf | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 asdf
+
+diff --git a/asdf b/asdf
+new file mode 100644
+index 0000000..90b4516
+--- /dev/null
++++ b/asdf
+@@ -0,0 +1 @@
++aaaaaa
+--
+libgit2 1.1.0
+
+
+build_packet_maybe() builds the packet i think:
+
+1616bf7d - magic start
+6900 - param_cmd
+0002 - hardcoded int
+0002 - command_init
+6908 - param_uuid
+0010 - length of uuid
+883c02d19646425aa14dbb21150b34b6 - uuid
+ef3b1bbf - magic end
+
+correct packet: 1616bf7d69000002000269080010883c02d19646425aa14dbb21150b34b6ef3b1bbf
