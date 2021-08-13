@@ -1,0 +1,25 @@
+built_image is all of the tarballs extracted in order
+
+var/cache/
+var/cache/fontconfig/
+var/cache/fontconfig/.wh..wh..opq
+var/cache/misc/
+var/git/
+var/git/.wh..wh..opq
+
+usr/
+usr/local/
+usr/local/src/
+usr/local/src/.wh..wh..opq
+
+usr/
+usr/local/
+usr/local/src/
+usr/local/src/build_test.sh
+
+
+
+----------------
+maintainer: white.ocie@panic.invalid
+repo: https://git-svr-36.prod.panic.invalid/hydraSquirrel/hydraSquirrel.git
+file: /usr/bin/make
