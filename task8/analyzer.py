@@ -167,7 +167,10 @@ def brute_force_session_key(pkt):
     # with open("SecLists/Usernames/Names/femalenames-usa-top1000.txt", "r") as f:
     #     possible_usernames = [x.strip() for x in f.readlines()]
     
-    with open("SecLists/Usernames/Names/familynames-usa-top1000.txt", "r") as f:
+    # with open("SecLists/Usernames/Names/familynames-usa-top1000.txt", "r") as f:
+    #     possible_usernames = [x.strip() for x in f.readlines()]
+    
+    with open("SecLists/Usernames/Names/.txt", "r") as f:
         possible_usernames = [x.strip() for x in f.readlines()]
 
     # dedup list
@@ -176,7 +179,7 @@ def brute_force_session_key(pkt):
 
     ts_start = int(pkt.time)
 
-    for i in range(4):
+    for i in range(6):
         ts = ts_start - i
         for v in _gen_version_short():
         # for v in ["1.0.4.3"]:
@@ -330,11 +333,21 @@ def analyze_session(packets):
     assert(len(ciphertext+nonce) == body_length)
 
     cached_session_keys = {
+        # 1210bd56-86f4-44c8-816a-b8d5d9c40c78
         # root+1.0.4.3+1615896614 (ts delta = -1)
         "192.168.178.179": binascii.unhexlify("23d69aa19fcbc4af6476897230122f73c709bc098f5b3fb7c4fde4116f784e74"),
 
+        # c8f5fb1b-87cb-4e14-9d01-8efef9c7502b
         # mohammed+0.4.7.5+1615896594 (ts delta = -1)
-        "192.168.174.131": binascii.unhexlify("fb43d897b3abae0c0246dadca89a2dde01912c917f78c688a9be04f48a13ad66")
+        "192.168.174.131": binascii.unhexlify("fb43d897b3abae0c0246dadca89a2dde01912c917f78c688a9be04f48a13ad66"),
+
+        # 870b0ed9-5288-4f17-9d84-e7a9bc028189
+        # phillips+3.0.8.4+1615896623 (ts delta = -3)
+        "192.168.151.216": binascii.unhexlify("e6b80686881d83e9e5cbbd6aef4d2208ab43b4a7c38ef593f8da33a00877f70b"),
+
+        # d071a2d6-a44e-41fe-af49-8b7df6587bad
+        # gipsy+1.5.7.2+1615896515 (ts delta = -1)
+        "172.23.56.185": binascii.unhexlify("88faa85f19baec8902ab4b7faff2ff84e35ebcef2901994f5b3b275dc7780dd0")
     }
 
     if victim_ip in cached_session_keys.keys():
