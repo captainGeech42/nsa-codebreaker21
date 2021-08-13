@@ -1,0 +1,29 @@
+searching the subnet 192.168.162.32/27 in brim shows an HTTP request from 192.168.162.36 to 10.18.42.32 at 2021-03-16T12:09:31.319 to fdxdz.invalid
+
+this is the proxy log entry
+2021-03-16 08:09:31 38 172.22.24.77 200 TCP_MISS 12734 479 GET http fdxdz.invalid pressure - - DIRECT 10.18.42.32 application/octet-stream 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/18.17763' PROXIED none - 172.22.25.251 SG-HTTP-Service - none -
+
+columns
+#Fields: date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-path cs-uri-query cs-username s-hierarchy s-supplier-name rs(Content-Type) cs(User-Agent) sc-filter-result sc-filter-category x-virus-id s-ip s-sitename x-virus-details x-icap-error-code x-icap-error-details
+
+c-ip: 172.22.24.77
+s-ip is 172.22.25.251
+
+c-ip is client ip
+s-ip is the ip of the appliance that the connection was proxied through
+(based on https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/web-and-network-security/proxysg/common/LogFieldsSubs.pdf)
+
+filtered_logins.json is grepcidr'd logins.json for the c-ip
+
+4624.json is filtered_logins.json jq'd for 4624 events
+
+failed answers:
+0X2FC67B
+0X2FC6CE
+
+asked support about answer format
+they said both of those IDs are wrong
+
+answer: 0X2FC5D4
+the very first logon event for the user in the session
+odd
