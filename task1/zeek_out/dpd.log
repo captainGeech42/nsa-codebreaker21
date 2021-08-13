@@ -1,0 +1,14 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	dpd
+#open	2021-08-02-17-05-19
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	proto	analyzer	failure_reason
+#types	time	string	addr	port	addr	port	enum	string	string
+1615896515.386199	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	tcp	IRC	too many long lines
+1615896574.076420	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	tcp	IRC	invalid reply number
+1615896597.266455	CtQiffyMWlh8pCEz4	192.168.174.131	33479	10.18.42.32	6666	tcp	IRC	invalid reply number
+1615896615.623363	CyXIqg4RPUG7IAQjE8	192.168.178.179	39920	10.18.42.32	6666	tcp	IRC	invalid reply number
+1615896620.039699	CB2a7w3LNUUZDkrg2j	192.168.147.12	31661	10.18.42.32	6666	tcp	IRC	invalid reply number
+#close	2021-08-02-17-05-19

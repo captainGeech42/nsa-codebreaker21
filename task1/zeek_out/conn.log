@@ -1,0 +1,18 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	conn
+#open	2021-08-02-17-05-19
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	proto	service	duration	orig_bytes	resp_bytes	conn_state	local_orig	local_resp	missed_bytes	history	orig_pkts	orig_ip_bytes	resp_pkts	resp_ip_bytes	tunnel_parents
+#types	time	string	addr	port	addr	port	enum	string	interval	count	count	string	bool	bool	count	string	count	count	count	count	set[string]
+1615895853.536403	CzsgkI3pg9KOyDKCc6	192.168.179.212	30410	10.18.42.32	555	tcp	http	0.014792	75	12396	SF	-	-	0	ShADadfF	6	395	5	12664	-
+1615896514.283666	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	tcp	-	1.389379	5475	180	SF	-	-	0	ShADadFf	12	6107	10	708	-
+1615896571.319208	Ca0hcD1kHlWkLNiYL6	192.168.162.36	39987	10.18.42.32	555	tcp	http	0.015012	75	12396	SF	-	-	0	ShADadfF	6	395	5	12664	-
+1615896572.292091	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	tcp	-	2.039418	3830	368	SF	-	-	0	ShADadFf	16	4670	12	1000	-
+1615896595.856362	CtQiffyMWlh8pCEz4	192.168.174.131	33479	10.18.42.32	6666	tcp	-	2.790057	4123	515	SF	-	-	0	ShADadFf	20	5171	14	1251	-
+1615896615.156821	CyXIqg4RPUG7IAQjE8	192.168.178.179	39920	10.18.42.32	6666	tcp	-	0.466792	358	120	SF	-	-	0	ShADadFf	10	886	8	544	-
+1615896618.263739	CB2a7w3LNUUZDkrg2j	192.168.147.12	31661	10.18.42.32	6666	tcp	-	3.350466	2279	664	SF	-	-	0	ShADadFf	24	3535	16	1504	-
+1615896626.183324	CTclIgGV1FPxyBAX2	192.168.151.216	34153	10.18.42.32	6666	tcp	irc	2.465294	622	352	SF	-	-	0	ShADadFf	14	1358	11	932	-
+1615897246.672279	ChaBCQ1ox0YdmGua09	192.168.252.17	35176	10.18.42.32	555	tcp	http	0.019371	75	12396	SF	-	-	0	ShADadfF	6	395	5	12664	-
+#close	2021-08-02-17-05-19

@@ -1,0 +1,31 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	weird
+#open	2021-08-02-17-05-19
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	name	addl	notice	peer	source
+#types	time	string	addr	port	addr	port	string	string	bool	string	string
+1615896515.063524	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	line_terminated_with_single_CR	-	F	zeek	CONTENTLINE
+1615896515.386199	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	irc_invalid_command	-	F	zeek	IRC
+1615896515.386199	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	irc_line_too_short	-	F	zeek	IRC
+1615896515.386199	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	irc_line_size_exceeded	-	F	zeek	IRC
+1615896515.386199	CyyMrh2lG1O80lnQpg	172.23.56.185	36475	10.18.42.32	6666	irc_too_many_invalid	-	F	zeek	IRC
+1615896572.555269	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	irc_invalid_command	-	F	zeek	IRC
+1615896572.555906	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	line_terminated_with_single_CR	-	F	zeek	CONTENTLINE
+1615896574.076420	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	irc_invalid_reply_number	-	F	zeek	IRC
+1615896574.076420	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	irc_line_too_short	-	F	zeek	IRC
+1615896574.076420	Cfr9HG3IKcpswC0Yk1	198.18.108.159	34203	10.18.42.32	6666	irc_too_many_invalid	-	F	zeek	IRC
+1615896595.856898	CtQiffyMWlh8pCEz4	192.168.174.131	33479	10.18.42.32	6666	irc_invalid_command	-	F	zeek	IRC
+1615896595.856898	CtQiffyMWlh8pCEz4	192.168.174.131	33479	10.18.42.32	6666	line_terminated_with_single_CR	-	F	zeek	CONTENTLINE
+1615896597.266455	CtQiffyMWlh8pCEz4	192.168.174.131	33479	10.18.42.32	6666	irc_invalid_reply_number	-	F	zeek	IRC
+1615896615.157303	CyXIqg4RPUG7IAQjE8	192.168.178.179	39920	10.18.42.32	6666	irc_invalid_command	-	F	zeek	IRC
+1615896615.157303	CyXIqg4RPUG7IAQjE8	192.168.178.179	39920	10.18.42.32	6666	line_terminated_with_single_CR	-	F	zeek	CONTENTLINE
+1615896615.623363	CyXIqg4RPUG7IAQjE8	192.168.178.179	39920	10.18.42.32	6666	irc_invalid_reply_number	-	F	zeek	IRC
+1615896618.881720	CB2a7w3LNUUZDkrg2j	192.168.147.12	31661	10.18.42.32	6666	irc_invalid_command	-	F	zeek	IRC
+1615896618.881720	CB2a7w3LNUUZDkrg2j	192.168.147.12	31661	10.18.42.32	6666	line_terminated_with_single_CR	-	F	zeek	CONTENTLINE
+1615896620.039699	CB2a7w3LNUUZDkrg2j	192.168.147.12	31661	10.18.42.32	6666	irc_line_too_short	-	F	zeek	IRC
+1615896620.039699	CB2a7w3LNUUZDkrg2j	192.168.147.12	31661	10.18.42.32	6666	irc_invalid_reply_number	-	F	zeek	IRC
+1615896626.183844	CTclIgGV1FPxyBAX2	192.168.151.216	34153	10.18.42.32	6666	irc_invalid_command	-	F	zeek	IRC
+1615896626.183844	CTclIgGV1FPxyBAX2	192.168.151.216	34153	10.18.42.32	6666	line_terminated_with_single_CR	-	F	zeek	CONTENTLINE
+#close	2021-08-02-17-05-19

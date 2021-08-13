@@ -1,0 +1,12 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	http
+#open	2021-08-02-17-05-19
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	trans_depth	method	host	uri	referrer	version	user_agent	origin	request_body_len	response_body_len	status_code	status_msg	info_code	info_msg	tags	username	password	proxied	orig_fuids	orig_filenames	orig_mime_types	resp_fuids	resp_filenames	resp_mime_types
+#types	time	string	addr	port	addr	port	count	string	string	string	string	string	string	string	count	count	count	string	count	string	set[enum]	string	string	set[string]	vector[string]	vector[string]	vector[string]	vector[string]	vector[string]	vector[string]
+1615895853.536634	CzsgkI3pg9KOyDKCc6	192.168.179.212	30410	10.18.42.32	555	1	GET	fdxdz.invalid	/decision	-	1.0	-	-	0	12231	200	OK	-	-	(empty)	-	-	-	-	-	-	F6D4WT13ZaAJs39Ald	-	-
+1615896571.319532	Ca0hcD1kHlWkLNiYL6	192.168.162.36	39987	10.18.42.32	555	1	GET	fdxdz.invalid	/pressure	-	1.0	-	-	0	12231	200	OK	-	-	(empty)	-	-	-	-	-	-	FEjz0zNlaa4yo0qjj	-	-
+1615897246.672673	ChaBCQ1ox0YdmGua09	192.168.252.17	35176	10.18.42.32	555	1	GET	fdxdz.invalid	/question	-	1.0	-	-	0	12231	200	OK	-	-	(empty)	-	-	-	-	-	-	FVelTx2LTEhiDdV16e	-	-
+#close	2021-08-02-17-05-19

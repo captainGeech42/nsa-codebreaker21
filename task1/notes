@@ -1,0 +1,10 @@
+$ mkdir zeek_out
+$ cd zeek_out
+$ zeek -C -r ../capture.pcap
+$ cat conn.log | zeek-cut id.orig_h | grepcidr -f ../ip_ranges.txt
+
+answer:
+172.23.56.185
+192.168.162.36
+192.168.174.131
+192.168.151.216
