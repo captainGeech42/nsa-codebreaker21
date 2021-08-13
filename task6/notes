@@ -1,0 +1,9 @@
+version number: 1.0.4.3-OYP
+ip: 198.51.100.210
+pubkey: b8e84cc9cded282df1f9fd129c8140202b78dafed2f6038800e4d004f03dc11d
+
+got them from decrypted strings, get_encrypted_str()
+
+in gdb:
+b *main+30
+call _Z13zftdbizlunxcui(19)
