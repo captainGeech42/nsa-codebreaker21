@@ -1,0 +1,19 @@
+start the container:
+
+    $ docker run --rm --cap-add=NET_ADMIN -p5555:5555 -p2222:2222 -it codebreaker bash
+
+setup nic:
+
+    $ ./dummy_iface.sh
+
+start listener:
+
+    $ nc -lvp 6666
+
+start ssh:
+
+    $ /usr/sbin/sshd -D
+
+start remote debugging:
+
+    $ gdbserver :5555 /usr/bin/make
