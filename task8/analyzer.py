@@ -207,6 +207,8 @@ def brute_force_session_key(pkt):
 x = lambda d: binascii.hexlify(d).decode()
 
 def parse_packet(data):
+    # this code is literal garbage
+
     MAGIC_START = b"\x16\x16\xbf\x7d"
     MAGIC_END = b"\xef\x3b\x1b\xbf"
 
@@ -224,10 +226,19 @@ def parse_packet(data):
 
     RESPONSE_CODE_LENGTH = 4
 
+    # below are from protocol analysis
+    # PARAM_CONTENTS is used for server response, "RUN: [cmd]\n" or "EXEC: [cmd]\n"
+    COMMAND_GET_TASKING_PATH = b"\x00\x03" # send some data back including /tmp/endpoints/{uuid}/tasking\x00 sus (PARAM_DIRNAME response)
+    COMMAND_GET_TASK_ID = b"\x00\x04" # sends the tasking path (6918 response)
+    COMMAND_GET_TASK = b"\x00\x05" # sends the tasking path and the task id
+
+    PARAM_TASK_ID = b"\x69\x18"
     stream = io.BytesIO(data)
 
     # packets might just be a list of PARAMs, encapculated in MAGICs
     # too lazy to do that rn
+
+    print(x(data))
 
     assert(stream.read(4) == MAGIC_START)
 
@@ -276,6 +287,9 @@ def parse_packet(data):
                 return
             contents_len = struct.unpack(">H", stream.read(2))[0]
             contents = stream.read(contents_len).decode()
+
+            if contents_len > 100:
+                contents = contents[:100] + "<truncated ...>"
             print(f"contents = \"{contents}\" (len: {contents_len})")
 
             param2 = stream.read(2)
@@ -287,6 +301,57 @@ def parse_packet(data):
             print(f"more = {x(more)}")
         elif command == COMMAND_FIN:
             print("fin")
+        elif command == COMMAND_GET_TASKING_PATH:
+            print("COMMAND_GET_TASKING_PATH")
+            param2 = stream.read(2)
+            if param2 != PARAM_UUID:
+                print(f"wrong param in COMMAND_GET_TASKING_PATH (should be UUID): {x(param2)}")
+                return
+            uuid_len = struct.unpack(">H", stream.read(2))[0]
+            uuid = stream.read(uuid_len)
+            print(f"uuid = {UUID(bytes=uuid)}")
+        elif command == COMMAND_GET_TASK_ID:
+            print("COMMAND_GET_TASK_ID")
+            param2 = stream.read(2)
+            if param2 != PARAM_UUID:
+                print(f"wrong param in COMMAND_GET_TASK_ID (should be UUID): {x(param2)}")
+                return
+            uuid_len = struct.unpack(">H", stream.read(2))[0]
+            uuid = stream.read(uuid_len)
+            print(f"uuid = {UUID(bytes=uuid)}")
+
+            param2 = stream.read(2)
+            if param2 != PARAM_DIRNAME:
+                print(f"wrong param in COMMAND_GET_TASK_ID (should be DIRNAME): {x(param2)}")
+                return
+            dirname_len = struct.unpack(">H", stream.read(2))[0]
+            dirname = stream.read(dirname_len).decode()
+            print(f"dirname = \"{dirname}\"")
+        elif command == COMMAND_GET_TASK:
+            print("COMMAND_GET_TASK")
+            param2 = stream.read(2)
+            if param2 != PARAM_UUID:
+                print(f"wrong param in COMMAND_GET_TASK (should be UUID): {x(param2)}")
+                return
+            uuid_len = struct.unpack(">H", stream.read(2))[0]
+            uuid = stream.read(uuid_len)
+            print(f"uuid = {UUID(bytes=uuid)}")
+
+            param2 = stream.read(2)
+            if param2 != PARAM_DIRNAME:
+                print(f"wrong param in COMMAND_GET_TASK (should be DIRNAME): {x(param2)}")
+                return
+            dirname_len = struct.unpack(">H", stream.read(2))[0]
+            dirname = stream.read(dirname_len).decode()
+            print(f"dirname = \"{dirname}\"")
+
+            param2 = stream.read(2)
+            if param2 != PARAM_FILENAME:
+                print(f"wrong param in COMMAND_GET_TASK (should be FILENAME): {x(param2)}")
+                return
+            filename_len = struct.unpack(">H", stream.read(2))[0]
+            filename = stream.read(filename_len).decode()
+            print(f"filename = \"{filename}\"")
         else:
             print(f"unknown command: {x(command)}")
             print(data)
@@ -300,6 +365,35 @@ def parse_packet(data):
         
         code = struct.unpack("<I", stream.read(code_length))[0] # might need to be >I, not sure
         print(f"response code: {code}")
+    elif param == PARAM_CONTENTS:
+        print("PARAM_CONTENTS")
+        cmd_length = struct.unpack(">H", stream.read(2))[0]
+        cmd = stream.read(cmd_length)
+        print(f"cmd str from server: {cmd}")
+    elif param == PARAM_DIRNAME:
+        print("PARAM_DIRNAME")
+        dirname_len = struct.unpack(">H", stream.read(2))[0]
+        dirname = stream.read(dirname_len).decode()
+        print(f"dirname = \"{dirname}\"")
+    elif param == PARAM_TASK_ID:
+        print("PARAM_TASK_ID")
+        id_len = struct.unpack(">H", stream.read(2))[0]
+        id = stream.read(id_len).decode()
+        print(f"task id = \"{id}\"")
+
+        # this is especially stupid, but keeps with the theme
+        try:
+            # print("extra")
+            stream.read(2)
+            id_len = struct.unpack(">H", stream.read(2))[0]
+            # print(id_len)
+            id = stream.read(id_len).decode()
+            # print(id)
+            print(f"task id = \"{id}\"")
+
+            return
+        except:
+            pass
     else:
         print(f"unhandled param: {x(param)}")
         print(data)

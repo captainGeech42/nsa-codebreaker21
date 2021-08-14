@@ -1,0 +1,24 @@
+protocol
+
+when server sends a command with PARAM_RUN, the output is sent with COMMAND_UPLOAD
+    dirname = "runcmd"
+    filename = argv[0]
+    contents = stdout
+
+command 0004 could be a request for tasking
+    has a filepath, /tmp/endpoints/{uuid}/tasking\x00, vv sus
+
+command 0005 could be a request for task contents
+
+get tasks for /tmp/endpoints, it just lists the directory contents
+
+had to remove my own bot UUIDs from the list, good thing i had a log
+
+----
+UUIDs:
+1ff71e53-8ed5-4339-8d42-9225059b568c
+e598e015-70e0-4fd3-9c66-51fbc104433f
+0311d9eb-54e8-4740-8731-cb040a85692e
+aab67206-dc2e-4550-92e4-ac791964ba9c
+595145c9-87fe-4f21-851c-0afa59ebc11b
+3221fa8d-f23c-454e-a774-2d75e236fd8d

