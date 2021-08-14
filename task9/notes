@@ -13,12 +13,12 @@ command 0005 could be a request for task contents
 get tasks for /tmp/endpoints, it just lists the directory contents
 
 had to remove my own bot UUIDs from the list, good thing i had a log
+would've been better if i didn't have to try a second time after removing them all but one, ugh
 
 ----
 UUIDs:
 1ff71e53-8ed5-4339-8d42-9225059b568c
 e598e015-70e0-4fd3-9c66-51fbc104433f
-0311d9eb-54e8-4740-8731-cb040a85692e
 aab67206-dc2e-4550-92e4-ac791964ba9c
 595145c9-87fe-4f21-851c-0afa59ebc11b
 3221fa8d-f23c-454e-a774-2d75e236fd8d

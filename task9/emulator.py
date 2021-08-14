@@ -54,8 +54,7 @@ class C2Command():
         return payload
 
     def fin():
-        log.error("implement C2Command.fin()")
-        raise NotImplementedError
+        return C2Command.COMMAND_FIN
     
     def get_tasking_path(uuid: uuid.UUID):
         payload = b""
@@ -394,6 +393,16 @@ class Bot():
         )
 
         return C2Packet.get_response(self)[0]
+    
+    def fin(self):
+        C2Packet.send_session_pkt(
+            self,
+            C2Param.cmd(
+                C2Command.fin()
+            )
+        )
+
+        return C2Packet.get_response(self)[0]
 
 def main(argv):
     server = pwn.remote(SERVER_IP, SERVER_PORT)
@@ -415,14 +424,19 @@ def main(argv):
     log.success(f"tasking path: {bot.tasking_path}")
 
     task_ids = bot.get_task_ids("/tmp/endpoints")
-    if len(task_ids) > 0:
-        log.success(f"got {len(task_ids)} task(s): {task_ids}")
+    log.success(f"got {len(task_ids)} task(s): {task_ids}")
 
-        for id in task_ids:
-            task = bot.get_task_for_id(id)
-            log.info(f"task {id}: {task}")
+    # if len(task_ids) > 0:
+    #     for id in task_ids:
+    #         task = bot.get_task_for_id(id)
+    #         log.info(f"task {id}: {task}")
+    # else:
+    #     log.warning("didn't get any tasks")
+
+    if bot.fin() == 0:
+        log.success("fin'd bot")
     else:
-        log.warning("didn't get any tasks")
+        log.error("didn't fin bot")
 
     return 0
 
