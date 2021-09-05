@@ -1,0 +1,36 @@
+execve("./powershell_lp", ["./powershell_lp"], 0x7ffed36f5fd0 /* 23 vars */) = 0
+brk(NULL)                               = 0x555555653000
+brk(0x5555556541c0)                     = 0x5555556541c0
+arch_prctl(ARCH_SET_FS, 0x555555653880) = 0
+uname({sysname="Linux", nodename="zw-pc-win", ...}) = 0
+readlink("/proc/self/exe", "/mnt/d/MDE_EXCL/ctf/nsacc21/task"..., 4096) = 55
+brk(0x5555556751c0)                     = 0x5555556751c0
+brk(0x555555676000)                     = 0x555555676000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "ps_server.log", O_RDWR|O_CREAT|O_APPEND, 0644) = 3
+openat(AT_FDCWD, "ps_data.log", O_RDWR|O_CREAT|O_APPEND, 0644) = 4
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x4), ...}) = 0
+write(1, "Server started \33[92mport 8080\33[0"..., 34) = 34
+mmap(NULL, 800, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0) = 0x7fa997978000
+socket(AF_INET, SOCK_STREAM, IPPROTO_IP) = 5
+setsockopt(5, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+bind(5, {sa_family=AF_INET, sin_port=htons(8080), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+listen(5, 10)                           = 0
+rt_sigaction(SIGCHLD, {sa_handler=0x7fa99769f3fa, sa_mask=[CHLD], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7fa9976acc20}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+accept(5, {sa_family=AF_INET, sin_port=htons(58032), sin_addr=inet_addr("127.0.0.1")}, [16]) = 6
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x555555653b50) = 47720
+fstat(3, {st_mode=S_IFREG|0777, st_size=14618, ...}) = 0
+lseek(3, 0, SEEK_CUR)                   = 0
+write(3, "Child 47720 handling connection "..., 53) = 53
+brk(0x555555675000)                     = 0x555555675000
+close(6)                                = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=47720, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], WNOHANG, NULL) = 47720
+fstat(3, {st_mode=S_IFREG|0777, st_size=14671, ...}) = 0
+lseek(3, 0, SEEK_CUR)                   = 14671
+write(3, "Child 47720 exited with status 0"..., 33) = 33
+fsync(3)                                = 0
+wait4(-1, 0x7fff057b5f9c, WNOHANG, NULL) = -1 ECHILD (No child processes)
+rt_sigreturn({mask=[]})                 = 0
+accept(5, 0x7fff057b65a0, [16])         = ? ERESTARTSYS (To be restarted if SA_RESTART is set)
+strace: Process 47718 detached

